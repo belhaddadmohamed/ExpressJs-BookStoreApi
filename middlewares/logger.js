@@ -1,6 +1,6 @@
 
 const logger = (req, res, next) => {
-    console.log("Helllo logger")
+    console.log(`${req.method} ${req.protocol} -> ${req.get('host')}`)
     next()
 }
 
