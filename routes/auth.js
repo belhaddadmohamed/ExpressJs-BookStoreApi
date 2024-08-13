@@ -6,6 +6,10 @@ const {User, validateLoginUser, validateResigterUser} = require("../models/User"
 // Password encryption
 const bcrypt = require('bcrypt');
 
+// JWT
+const jwt = require("jsonwebtoken")
+
+
 
 /**
  * @desc    Register new user
@@ -35,11 +39,11 @@ router.post("/register", asyncHandler(async (req, res) => {
         password: req.body.password,
         isAdmin: req.body.isAdmin,
     })
-
     const result  = await user.save()
+
     // Don't give the password to the user --> Give the token instead
     const {password, ...other} = result._doc
-    const token = null
+    const token = jwt.sign({id: user._id, username:user.username}, process.env.JWT_SECRECT_KEY)
 
     
     res.status(201).json({...other,  token})
@@ -67,12 +71,14 @@ router.post("/login", asyncHandler(async (req, res) => {
         return res.status(400).json({message: "Invalid email or password!!"})
     }
 
+    // Compare the entered password with the database password (encrypted!!)
     const isMatchPassword = await bcrypt.compare(req.body.password, user.password)
     if(!isMatchPassword){
         return res.status(400).json({message: "Invalid email or password!!"})
     }
 
-    const token = null
+    // Generate a token
+    const token = jwt.sign({id: user._id, idAdmin: user.isAdmin}, process.env.JWT_SECRECT_KEY)
     const {password, ...other} = user._doc
 
     res.status(200).json({...other, token})
