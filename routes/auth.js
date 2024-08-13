@@ -19,15 +19,15 @@ router.post("/register", asyncHandler(async (req, res) => {
         return res.status(400).json({message: error.details[0].message})
     }
 
-    // Password encryption
-    const saltRounds = await bcrypt.genSalt(10);
-    req.body.password = await bcrypt.hash(req.body.password, saltRounds)
-
     // Check the user if already existed
     let user = await User.findOne({email: req.body.email})
     if(user){
         return res.status(400).json({message: "User already registered!!"})
     }
+
+    // Password encryption
+    const saltRounds = await bcrypt.genSalt(10);
+    req.body.password = await bcrypt.hash(req.body.password, saltRounds)
 
     user = new User({
         email: req.body.email,
@@ -61,7 +61,22 @@ router.post("/login", asyncHandler(async (req, res) => {
         return res.status(400).json({message: error.details[0].message})
     }
 
-    
+    // Check the user if it is existed
+    let user = await User.findOne({email: req.body.email})
+    if(!user){
+        return res.status(400).json({message: "Invalid email or password!!"})
+    }
+
+    const isMatchPassword = await bcrypt.compare(req.body.password, user.password)
+    if(!isMatchPassword){
+        return res.status(400).json({message: "Invalid email or password!!"})
+    }
+
+    const token = null
+    const {password, ...other} = user._doc
+
+    res.status(200).json({...other, token})
+
 }))
 
 
