@@ -43,7 +43,6 @@ function validateResigterUser(obj){
         email: joi.string().trim().min(5).max(100).required().email(),
         username: joi.string().trim().min(2).max(200).required(),
         password: joi.string().trim().min(6).required(),
-        isAdmin: joi.bool(),
     })
 
     return schema.validate(obj)
@@ -63,7 +62,6 @@ function validateUpdateUser(obj){
         email: joi.string().trim().min(5).max(100).email(),
         username: joi.string().trim().min(2).max(200),
         password: joi.string().trim().min(6),
-        isAdmin: joi.bool(),
     })
 
     return schema.validate(obj)
