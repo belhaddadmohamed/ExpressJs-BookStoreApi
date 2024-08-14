@@ -22,10 +22,11 @@ function verifyToken(req, res, next) {
 function verifyTokenAndAuthorization(req, res, next){
     verifyToken(req, res, () => {
         // Next middleware
+        // user in req => is provided in verifyToken()
         if(req.user.id === req.params.id || req.user.isAdmin){
             next()
         }else{
-            return res.status(403).json({message: "You're not allowed!!"})
+            return res.status(403).json({message: "You're not allowed awedi !!"})
         }
     })
 }
