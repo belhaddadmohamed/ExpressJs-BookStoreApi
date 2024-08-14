@@ -43,7 +43,7 @@ router.post("/register", asyncHandler(async (req, res) => {
 
     // Don't give the password to the user --> Give the token instead
     const {password, ...other} = result._doc
-    const token = jwt.sign({id: user._id, username:user.username}, process.env.JWT_SECRECT_KEY)
+    const token = jwt.sign({id: user._id, username:user.username}, process.env.JWT_SECRET_KEY)
 
     
     res.status(201).json({...other,  token})
@@ -78,7 +78,7 @@ router.post("/login", asyncHandler(async (req, res) => {
     }
 
     // Generate a token
-    const token = jwt.sign({id: user._id, idAdmin: user.isAdmin}, process.env.JWT_SECRECT_KEY)
+    const token = jwt.sign({id: user._id, idAdmin: user.isAdmin}, process.env.JWT_SECRET_KEY)
     const {password, ...other} = user._doc
 
     res.status(200).json({...other, token})

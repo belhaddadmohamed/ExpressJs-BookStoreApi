@@ -3,6 +3,9 @@ const router = express.Router()
 const asyncHandler = require("express-async-handler")   // Try/Catch handler 
 const {User, validateUpdateUser} = require("../models/User")
 const bcrypt = require("bcrypt")
+// Verify token middleware
+const { verifyToken } = require("../middlewares/verifyToken")
+
 
 
 /**
@@ -11,7 +14,12 @@ const bcrypt = require("bcrypt")
  * @method  POST
  * @access  private
  */
-router.put('/:id', asyncHandler(async (req, res) => {
+router.put('/:id', verifyToken, asyncHandler(async (req, res) => {
+    // Verify token (req.user => is provided in the verifyToken function)
+    if(req.user._id != req.params.id){  // I know you have a token but you can't touch the other's profile hhh
+        return res.status(403).json("You're not allowed, you can only update your profile")
+    }
+
     // Validate the request information
     const {error} = validateUpdateUser(req.body)
     if(error){
