@@ -18,6 +18,7 @@ const jwt = require("jsonwebtoken")
  * @access  public
  */
 router.post("/register", asyncHandler(async (req, res) => {
+    // Fields validation
     const {error} = validateResigterUser(req.body)
     if(error){
         return res.status(400).json({message: error.details[0].message})
@@ -42,7 +43,7 @@ router.post("/register", asyncHandler(async (req, res) => {
 
     // Don't give the password to the user --> Give the token instead
     const {password, ...other} = result._doc
-    const token = jwt.sign({id: user._id, username:user.username}, process.env.JWT_SECRET_KEY)
+    const token = jwt.sign({id: user._id, isAdmin: user.isAdmin}, process.env.JWT_SECRET_KEY)
 
     
     res.status(201).json({...other,  token})
@@ -59,12 +60,13 @@ router.post("/register", asyncHandler(async (req, res) => {
  * @access  public
  */
 router.post("/login", asyncHandler(async (req, res) => {
+    // Fields validation
     const {error} = validateLoginUser(req.body)
     if(error){
         return res.status(400).json({message: error.details[0].message})
     }
 
-    // Check the user if it is existed
+    // Get the user
     let user = await User.findOne({email: req.body.email})
     if(!user){
         return res.status(400).json({message: "Invalid email or password!!"})
@@ -77,6 +79,7 @@ router.post("/login", asyncHandler(async (req, res) => {
     }
 
     // Generate a token
+    // Response: token + user without password
     const token = jwt.sign({id: user._id, isAdmin: user.isAdmin}, process.env.JWT_SECRET_KEY)
     const {password, ...other} = user._doc
 
