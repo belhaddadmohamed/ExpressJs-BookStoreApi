@@ -2,6 +2,8 @@ const express = require("express")
 const router = express.Router()
 const asyncHandler = require("express-async-handler")   // Try/Catch handler 
 const {Book, validateCreateBook, validateUpdatedBook} = require("../models/Book")
+// Get token verifications
+const verifyTokenAndAdmin = require("../middlewares/verifyToken")
 
 
 /**
@@ -36,9 +38,9 @@ router.get("/:id", asyncHandler(async (req, res) =>  {
  * @desc    Create new book
  * @route   /api/books
  * @method  POST
- * @access  public
+ * @access  private (Only admin)
  */
-router.post("/", asyncHandler( async (req, res) => {
+router.post("/", verifyTokenAndAdmin, asyncHandler( async (req, res) => {
     // Form validation
     const {error} = validateCreateBook(req.body)
     
@@ -65,9 +67,9 @@ router.post("/", asyncHandler( async (req, res) => {
  * @desc    Update a book
  * @route   /api/books/:id
  * @method  PUT
- * @access  public
+ * @access  private (Only admin)
  */
-router.put("/:id", async (req, res) => {
+router.put("/:id", verifyTokenAndAdmin, async (req, res) => {
     // Form validation
     const {error} = validateUpdatedBook(req.body)
     
@@ -95,9 +97,9 @@ router.put("/:id", async (req, res) => {
  * @desc    Delete a book
  * @route   /api/books/:id
  * @method  DELETE
- * @access  public
+ * @access  private (Only admin)
  */
-router.delete ("/:id", asyncHandler(async (req, res) => {
+router.delete ("/:id", verifyTokenAndAdmin, asyncHandler(async (req, res) => {
 
     const book = await Book.findById(req.params.id)
     if(book){

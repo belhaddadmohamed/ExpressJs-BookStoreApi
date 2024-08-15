@@ -2,17 +2,18 @@ const jwt = require("jsonwebtoken")
 
 
 function verifyToken(req, res, next) {
+    // Check token in headers
     const token = req.headers.token
 
     if(token){
         try {
             const decocded = jwt.verify(token, process.env.JWT_SECRET_KEY)  // First we want to verify the secret_key
-            req.user = decocded   // Add the decoded user to the request
-            next()   // Keep going
+            req.user = decocded   // Add the decoded user (Payload) to the request
+            next()   // Next middleware
         } catch (error) {
             res.status(401).json("Invalid token !!")
         }
-    }else{
+    }else{  // No token in headers
         res.status(401).json("No token provided !!")
     }
 }
@@ -20,10 +21,10 @@ function verifyToken(req, res, next) {
 
 // User authorization
 function verifyTokenAndAuthorization(req, res, next){
-    verifyToken(req, res, () => {
-        // Next middleware
+    verifyToken(req, res, () => { // Next middleware
         // user in req => is provided in verifyToken()
-        if(req.user.id === req.params.id || req.user.isAdmin){  // Can be accessed by the user himself of the admin
+        // Verify ther token user.id is the same id in url
+        if(req.user.id === req.params.id || req.user.isAdmin){  // This can be accessed either by user himself or admin 
             next()
         }else{
             return res.status(403).json({message: "You're not allowed awedi !!"})
@@ -36,7 +37,6 @@ function verifyTokenAndAuthorization(req, res, next){
 function verifyTokenAndAdmin(req, res, next){
     verifyToken(req, res, () => {
         // Next middleware
-        console.log(req.user)
         if(req.user.isAdmin){
             next()
         }else{
