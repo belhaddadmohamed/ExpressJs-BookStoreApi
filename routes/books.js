@@ -3,7 +3,7 @@ const router = express.Router()
 const asyncHandler = require("express-async-handler")   // Try/Catch handler 
 const {Book, validateCreateBook, validateUpdatedBook} = require("../models/Book")
 // Get token verifications
-const verifyTokenAndAdmin = require("../middlewares/verifyToken")
+const {verifyTokenAndAdmin} = require("../middlewares/verifyToken")
 
 
 /**
