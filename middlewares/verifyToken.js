@@ -23,7 +23,7 @@ function verifyTokenAndAuthorization(req, res, next){
     verifyToken(req, res, () => {
         // Next middleware
         // user in req => is provided in verifyToken()
-        if(req.user.id === req.params.id || req.user.isAdmin){
+        if(req.user.id === req.params.id || req.user.isAdmin){  // Can be accessed by the user himself of the admin
             next()
         }else{
             return res.status(403).json({message: "You're not allowed awedi !!"})
@@ -36,6 +36,7 @@ function verifyTokenAndAuthorization(req, res, next){
 function verifyTokenAndAdmin(req, res, next){
     verifyToken(req, res, () => {
         // Next middleware
+        console.log(req.user)
         if(req.user.isAdmin){
             next()
         }else{

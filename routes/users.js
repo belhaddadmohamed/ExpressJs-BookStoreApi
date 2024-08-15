@@ -12,7 +12,7 @@ const { verifyToken, verifyTokenAndAdmin, verifyTokenAndAuthorization } = requir
  * @desc    Update user
  * @route   /api/users/:id
  * @method  POST
- * @access  private
+ * @access  private (Only admin & user himself)
  */
 router.put('/:id', verifyTokenAndAuthorization, asyncHandler(async (req, res) => {
 
@@ -42,19 +42,53 @@ router.put('/:id', verifyTokenAndAuthorization, asyncHandler(async (req, res) =>
 
 
 
-
 /**
  * @desc    Get users
  * @route   /api/users
  * @method  GET
- * @access  private
+ * @access  private (Only admin & user himself)
  */
-router.put('/:id', verifyTokenAndAdmin, asyncHandler(async (req, res) => {
-    const users = User.find()
+router.get('/', verifyTokenAndAdmin, asyncHandler(async (req, res) => {
+    const users = await User.find().select("-password")    // Don't provide password (for security)
     res.status(200).json(users)
 }))
 
 
+
+/**
+ * @desc    Get user by id
+ * @route   /api/users/:id
+ * @method  GET
+ * @access  private (Only admin & user himself)
+ */
+router.get('/:id', verifyTokenAndAuthorization, asyncHandler(async (req, res) => {
+    const user = await User.findById(req.params.id).select("-password")    // Don't provide password (for security)
+    if(user){
+        res.status(200).json(user)
+    }else{
+        res.status(404).json({message: "User not found"})
+    }
+
+}))
+
+
+
+/**
+ * @desc    Delte user by id
+ * @route   /api/users/:id
+ * @method  DELETE
+ * @access  private (Only admin & user himself)
+ */
+router.delete('/:id', verifyTokenAndAuthorization, asyncHandler(async (req, res) => {
+    const user = await User.findById(req.params.id).select("-password")    // Don't provide password (for security)
+    if(user){
+        await User.findByIdAndDelete(req.params.id)
+        res.status(200).json({message: "User deleted successfully!"})
+    }else{
+        res.status(404).json({message: "User not found"})
+    }
+
+}))
 
 
 

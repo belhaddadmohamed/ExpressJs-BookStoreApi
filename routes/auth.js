@@ -77,7 +77,7 @@ router.post("/login", asyncHandler(async (req, res) => {
     }
 
     // Generate a token
-    const token = jwt.sign({id: user._id, idAdmin: user.isAdmin}, process.env.JWT_SECRET_KEY)
+    const token = jwt.sign({id: user._id, isAdmin: user.isAdmin}, process.env.JWT_SECRET_KEY)
     const {password, ...other} = user._doc
 
     res.status(200).json({...other, token})
