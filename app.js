@@ -13,7 +13,6 @@ const connectToDB = require("./.config/db")
 dotenv.config()
 
 
-
 // Connect to database
 connectToDB()
 
