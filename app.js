@@ -5,16 +5,16 @@ const authPath = require("./routes/auth")
 const usersPath = require("./routes/users")
 // Import middlewares
 const logger = require("./middlewares/logger")
-// Error handler middlwares
+// Import error handler middlwares
 const {notFound, errorHandler} = require("./middlewares/errors")
 // Import dotenv
 const dotenv = require("dotenv")
+// Connect to database
 const connectToDB = require("./.config/db")
 dotenv.config()
 
-
-// Connect to database
 connectToDB()
+
 
 // Init App
 const app = express()

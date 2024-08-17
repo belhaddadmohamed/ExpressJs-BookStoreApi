@@ -8,7 +8,6 @@ const bcrypt = require('bcrypt');
 
 
 
-
 /**
  * @desc    Register new user
  * @route   /api/auth/register
@@ -47,8 +46,6 @@ router.post("/register", asyncHandler(async (req, res) => {
     
     res.status(201).json({...other,  token})
 }))
-
-
 
 
 
