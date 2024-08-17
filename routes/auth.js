@@ -6,8 +6,6 @@ const {User, validateLoginUser, validateResigterUser} = require("../models/User"
 // Password encryption
 const bcrypt = require('bcrypt');
 
-// JWT
-const jwt = require("jsonwebtoken")
 
 
 
@@ -34,6 +32,7 @@ router.post("/register", asyncHandler(async (req, res) => {
     const saltRounds = await bcrypt.genSalt(10);
     req.body.password = await bcrypt.hash(req.body.password, saltRounds)
 
+    // Save user in database
     user = new User({
         email: req.body.email,
         username: req.body.username,
@@ -43,7 +42,7 @@ router.post("/register", asyncHandler(async (req, res) => {
 
     // Don't give the password to the user --> Give the token instead
     const {password, ...other} = result._doc
-    const token = jwt.sign({id: user._id, isAdmin: user.isAdmin}, process.env.JWT_SECRET_KEY)
+    const token = user.generateToken()  // Method in User class
 
     
     res.status(201).json({...other,  token})
@@ -80,7 +79,7 @@ router.post("/login", asyncHandler(async (req, res) => {
 
     // Generate a token
     // Response: token + user without password
-    const token = jwt.sign({id: user._id, isAdmin: user.isAdmin}, process.env.JWT_SECRET_KEY)
+    const token = user.generateToken()
     const {password, ...other} = user._doc
 
     res.status(200).json({...other, token})

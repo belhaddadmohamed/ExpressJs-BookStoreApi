@@ -3,21 +3,19 @@ const booksPath = require("./routes/books")
 const authorsPath = require("./routes/authors")
 const authPath = require("./routes/auth")
 const usersPath = require("./routes/users")
-const mongoose = require("mongoose")
 // Import middlewares
 const logger = require("./middlewares/logger")
 // Error handler middlwares
 const {notFound, errorHandler} = require("./middlewares/errors")
 // Import dotenv
 const dotenv = require("dotenv")
+const connectToDB = require("./.config/db")
 dotenv.config()
 
 
 
 // Connect to database
-mongoose.connect(process.env.MONGO_URI)    // Returns promise
-        .then(() => console.log('Connected to MongoDb'))
-        .catch((error) => console.log('Connection Failed to mongodb', error))
+connectToDB()
 
 // Init App
 const app = express()

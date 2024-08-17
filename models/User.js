@@ -1,7 +1,8 @@
 const mongoose = require("mongoose")
 const joi = require("joi")
 const { validateCreateBook } = require("./Book")
-
+// Json Web Token
+const jwt = require("jsonwebtoken")
 
 
 const UserSchema = new mongoose.Schema({
@@ -34,6 +35,13 @@ const UserSchema = new mongoose.Schema({
 }, {timestamps: true})
 
 
+// Create new method 'generateToken'
+UserSchema.methods.generateToken = function(){
+    // Generate new token
+    return jwt.sign({id: this._id, isAdmin: this.isAdmin}, process.env.JWT_SECRET_KEY)
+}
+
+// User model
 const User = mongoose.model("User", UserSchema)
 
 
