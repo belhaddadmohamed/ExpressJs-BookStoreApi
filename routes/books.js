@@ -12,12 +12,15 @@ const {
 
 
 
-// Routes / Protected_Routes
-router.get("/", getAllBooks)
-router.get("/:id", getBookById)
-router.post("/", verifyTokenAndAdmin, createBook)
-router.put("/:id", verifyTokenAndAdmin, updateBook)
-router.delete ("/:id", verifyTokenAndAdmin, deleteBook)
+// Routes
+// /api/books
+router.route("/").get(getAllBooks)
+                 .post(verifyTokenAndAdmin, createBook)
+
+// /api/bookks/:id
+router.route("/:id").get(getBookById)                 
+                    .put(verifyTokenAndAdmin, updateBook)
+                    .delete(verifyTokenAndAdmin, deleteBook)
 
 
 // Export the module router

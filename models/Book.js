@@ -42,7 +42,7 @@ function validateCreateBook(obj){
         title: Joi.string().trim().min(3).max(250).required(),  // trim() to remove white space
         author: Joi.string().required(),
         price: Joi.number().min(0).required(),
-        cover: Joi.string().valid("Soft Cover", "Hard Cover").required(),
+        cover: Joi.string().valid("soft cover", "hard cover").required(),
     })
 
     return schema.validate(obj)
@@ -54,7 +54,7 @@ function validateUpdatedBook(obj){
         title: Joi.string().trim().min(3).max(250),  // trim() to remove white space
         author: Joi.string(),
         price: Joi.number().min(0),
-        cover: Joi.string().valid("Soft Cover", "Hard Cover"),
+        cover: Joi.string().valid("soft cover", "hard cover"),
     })
 
     return schema.validate(obj)
