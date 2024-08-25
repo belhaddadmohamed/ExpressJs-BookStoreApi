@@ -22,6 +22,7 @@ const app = express()
 // Apply MIDDLEWARE
 app.use(express.json()) // Converts json to js-object
 app.use(logger)
+app.use(express.urlencoded({extended:false}))
 
 // Routes
 app.use("/api/books", booksPath)

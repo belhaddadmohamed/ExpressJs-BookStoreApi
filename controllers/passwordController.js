@@ -1,5 +1,7 @@
 const expressAsyncHandler = require("express-async-handler");
-
+const { User } = require("../models/User");
+const jwt = require("jsonwebtoken");
+const bcrypt = require("bcrypt")
 
 
 /**
@@ -8,18 +10,88 @@ const expressAsyncHandler = require("express-async-handler");
  * @method  GET
  * @access  public
  */
-module.exports.getForgotPasswordView = expressAsyncHandler(async (req, res) => {
+module.exports.getForgotPasswordView = expressAsyncHandler((req, res) => {
     res.render('forgot-password')
 })
 
 
 
 /**
- * @desc    Post forgot password view
+ * @desc    Send forgot password link
  * @route   /password/forgot-password
  * @method  POST
  * @access  public
  */
-module.exports.postForgotPasswordView = expressAsyncHandler(async (req, res) => {
-    res.render('forgot-password')
+module.exports.sendForgotPasswordLink = expressAsyncHandler(async (req, res) => {
+    const user = await User.findOne({email:req.body.email})
+    // console.log(user)
+    if(!user){
+        return res.status(404).json({message:'User not found!'})
+    }
+    
+    const secret = process.env.JWT_SECRET_KEY + user.password   // باش  يتغير الرقم السري وبالتالي المستخدم راح يبدل مرة وحدة 
+    const token = jwt.sign({email:user.email, id:user.id}, secret, {
+        expiresIn:"10m"
+    })
+
+    const link = `http://localhost:8000/password/reset-password/${user.id}/${token}`
+    res.json({message:"Click on the link", resetPasswodLink:link})
+})
+
+
+
+/**
+ * @desc    get reset password view
+ * @route   /password/reset-password/:userId/token
+ * @method  GET
+ * @access  public
+ */
+module.exports.getResetPasswordView = expressAsyncHandler(async (req, res) => {
+    const user = await User.findById(req.params.userId)
+    // console.log(user)
+    if(!user){
+        return res.status(404).json({message:'User not found!'})
+    }
+    
+    const secret = process.env.JWT_SECRET_KEY + user.password   // باش  يتغير الرقم السري وبالتالي المستخدم راح يبدل مرة وحدة 
+    try {
+        jwt.verify(req.params.token, secret)
+        res.render('reset-password', {email:user.email})
+    } catch (error) {
+        res.json({message:error})
+    }
+})
+
+
+/**
+ * @desc    Reset password 
+ * @route   /password/reset-password/:userId/token
+ * @method  POST
+ * @access  public
+ */
+module.exports.resetPassword = expressAsyncHandler(async (req, res) => {
+    console.log(req.params.userId)
+    const user = await User.findById(req.params.userId)
+    // console.log(user)
+    if(!user){
+        return res.status(404).json({message:'User not found!'})
+    }
+
+    const secret = process.env.JWT_SECRET_KEY + user.password   // باش  يتغير الرقم السري وبالتالي المستخدم راح يبدل مرة وحدة 
+    try {
+        console.log("tryyyyyyyyyy")
+        // Verify token
+        jwt.verify(req.params.token, secret)
+        // Password encryption
+        const saltRounds = await bcrypt.genSalt(10);
+        user.body.password = await bcrypt.hash(req.body.password, saltRounds)
+        user.password = user.body.password
+        console.log(user.body.password)
+        await user.save()
+        // Render view
+        res.render('success-password')
+    } catch (error) {
+        console.log(error)
+        res.json({message:"error"})
+    }
 })
