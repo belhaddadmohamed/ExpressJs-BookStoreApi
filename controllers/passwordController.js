@@ -70,7 +70,6 @@ module.exports.getResetPasswordView = expressAsyncHandler(async (req, res) => {
  * @access  public
  */
 module.exports.resetPassword = expressAsyncHandler(async (req, res) => {
-    console.log(req.params.userId)
     const user = await User.findById(req.params.userId)
     // console.log(user)
     if(!user){
@@ -79,14 +78,12 @@ module.exports.resetPassword = expressAsyncHandler(async (req, res) => {
 
     const secret = process.env.JWT_SECRET_KEY + user.password   // باش  يتغير الرقم السري وبالتالي المستخدم راح يبدل مرة وحدة 
     try {
-        console.log("tryyyyyyyyyy")
         // Verify token
         jwt.verify(req.params.token, secret)
         // Password encryption
         const saltRounds = await bcrypt.genSalt(10);
-        user.body.password = await bcrypt.hash(req.body.password, saltRounds)
-        user.password = user.body.password
-        console.log(user.body.password)
+        req.body.password = await bcrypt.hash(req.body.password, saltRounds)
+        user.password = req.body.password
         await user.save()
         // Render view
         res.render('success-password')
