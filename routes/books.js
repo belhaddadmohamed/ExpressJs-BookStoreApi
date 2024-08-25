@@ -13,7 +13,13 @@ const {verifyTokenAndAdmin} = require("../middlewares/verifyToken")
  * @access  public
  */
 router.get("/", asyncHandler( async (req, res) =>  {
-    const books = await Book.find().populate("author", ["name"])
+    const {minPrice, maxPrice} = req.query
+    let books;
+    if(minPrice && maxPrice){
+        books = await Book.find({price: {$gte:minPrice, $lte:maxPrice}}).populate("author", ["name"])    // --/books?query=....
+    }else{
+        books = await Book.find().populate("author", ["name"])  // populate(): to get the full foreign object attributes
+    }
     res.json(books)
 }))
 
@@ -25,7 +31,7 @@ router.get("/", asyncHandler( async (req, res) =>  {
  * @access  public
  */
 router.get("/:id", asyncHandler(async (req, res) =>  {
-    const book = await Book.findById(req.params.id).populate("author")  // populate() to get the full object    
+    const book = await Book.findById(req.params.id).populate("author")  // populate(): to get the full foreign object    
     if(book){
         res.status(200).json(book)
     }else{
