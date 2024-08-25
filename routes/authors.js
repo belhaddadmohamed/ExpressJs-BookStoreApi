@@ -14,7 +14,9 @@ const {verifyTokenAndAdmin} = require("../middlewares/verifyToken")
  */
 router.get("/", asyncHandler(async (req, res) => {
         // const authors = await Author.find().sort({name: -1}).select("name -_id")     // 1/-1 is the reverse value
-        const authors = await Author.find()    // 1/-1 is the reverse value
+        const {pageNumber} = req.query
+        authorsPerPage = 2
+        const authors = await Author.find().skip((pageNumber - 1) * authorsPerPage).limit(authorsPerPage)
         res.status(200).json(authors)
     }
 ))
