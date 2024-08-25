@@ -3,6 +3,7 @@ const booksPath = require("./routes/books")
 const authorsPath = require("./routes/authors")
 const authPath = require("./routes/auth")
 const usersPath = require("./routes/users")
+const passwordPath = require("./routes/password")
 // Import middlewares
 const logger = require("./middlewares/logger")
 // Import error handler middlwares
@@ -27,6 +28,7 @@ app.use("/api/books", booksPath)
 app.use("/api/authors", authorsPath)
 app.use("/api/auth", authPath)
 app.use("/api/users", usersPath)
+app.use("/password", passwordPath)
 
 // Error handler middleware
 app.use(notFound)
