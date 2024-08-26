@@ -1,16 +1,15 @@
 const express = require("express")
-// Import middlewares
-const logger = require("./middlewares/logger")
-// Import error handler middlwares
-const {notFound, errorHandler} = require("./middlewares/errors")
-// Import dotenv
-require("dotenv").config()
-// Import path
-const path = require("path")
-// Connect to database
-const connectToDB = require("./.config/db")
-connectToDB()
+const logger = require("./middlewares/logger")     // Import middlewares
+const {notFound, errorHandler} = require("./middlewares/errors")     // Import error handler middlwares
+require("dotenv").config()    // Import dotenv
+const path = require("path")       // Import path
+const {helmet} = require("helmet")
 
+
+// Connect to database
+const connectToDB = require("./.config/db")     
+const { default: helmet } = require("helmet")
+connectToDB()
 
 // Init App
 const app = express()

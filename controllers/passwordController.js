@@ -1,5 +1,5 @@
 const expressAsyncHandler = require("express-async-handler");
-const { User } = require("../models/User");
+const { User, validateChangePassword } = require("../models/User");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt")
 const nodeMailer = require("nodemailer")
@@ -58,12 +58,13 @@ module.exports.sendForgotPasswordLink = expressAsyncHandler(async (req, res) => 
     transporter.sendMail(mailOptions, function(error, success){
         if(error){
             console.log(error)
+            res.status(500).json({message:"Something went wrong!!"})
         }else{
             console.log("Email sent: " + success.response)
+            res.render("link-sent")
         }
     })
 
-    res.render("link-sent")
 })
 
 
@@ -76,7 +77,6 @@ module.exports.sendForgotPasswordLink = expressAsyncHandler(async (req, res) => 
  */
 module.exports.getResetPasswordView = expressAsyncHandler(async (req, res) => {
     const user = await User.findById(req.params.userId)
-    // console.log(user)
     if(!user){
         return res.status(404).json({message:'User not found!'})
     }
@@ -98,8 +98,14 @@ module.exports.getResetPasswordView = expressAsyncHandler(async (req, res) => {
  * @access  public
  */
 module.exports.resetPassword = expressAsyncHandler(async (req, res) => {
+    // Password validation
+    const {error} = validateChangePassword(req.body)
+    if(error){
+        return res.status(400).json({message:error.details[0].message})
+    }
+
+    // Get the user
     const user = await User.findById(req.params.userId)
-    // console.log(user)
     if(!user){
         return res.status(404).json({message:'User not found!'})
     }
