@@ -4,15 +4,19 @@ const logger = require("./middlewares/logger")
 // Import error handler middlwares
 const {notFound, errorHandler} = require("./middlewares/errors")
 // Import dotenv
-const dotenv = require("dotenv")
+require("dotenv").config()
+// Import path
+const path = require("path")
 // Connect to database
 const connectToDB = require("./.config/db")
-dotenv.config()
-
 connectToDB()
+
 
 // Init App
 const app = express()
+
+// Static folder (images...)
+app.use(express.static(path.join(__dirname, "images")))     // Pour afficher l'image utilisant URL (http://localhost:8000/img_name.jpg)
 
 // Apply MIDDLEWARE
 app.use(express.json()) // Converts json to js-object
