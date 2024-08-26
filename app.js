@@ -1,9 +1,4 @@
 const express = require("express")
-const booksPath = require("./routes/books")
-const authorsPath = require("./routes/authors")
-const authPath = require("./routes/auth")
-const usersPath = require("./routes/users")
-const passwordPath = require("./routes/password")
 // Import middlewares
 const logger = require("./middlewares/logger")
 // Import error handler middlwares
@@ -25,11 +20,12 @@ app.use(logger)
 app.use(express.urlencoded({extended:false}))
 
 // Routes
-app.use("/api/books", booksPath)
-app.use("/api/authors", authorsPath)
-app.use("/api/auth", authPath)
-app.use("/api/users", usersPath)
-app.use("/password", passwordPath)
+app.use("/api/books", require("./routes/books"))
+app.use("/api/authors", require("./routes/authors"))
+app.use("/api/auth", require("./routes/auth"))
+app.use("/api/users", require("./routes/users"))
+app.use("/api/upload", require("./routes/upload"))
+app.use("/password", require("./routes/password"))
 
 // Error handler middleware
 app.use(notFound)
