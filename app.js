@@ -3,12 +3,12 @@ const logger = require("./middlewares/logger")     // Import middlewares
 const {notFound, errorHandler} = require("./middlewares/errors")     // Import error handler middlwares
 require("dotenv").config()    // Import dotenv
 const path = require("path")       // Import path
-const {helmet} = require("helmet")
+const helmet = require("helmet")  // Make the applicaiton more secure
+const cors = require("cors")   // Allows interaction with frontend
 
 
 // Connect to database
 const connectToDB = require("./.config/db")     
-const { default: helmet } = require("helmet")
 connectToDB()
 
 // Init App
@@ -21,6 +21,15 @@ app.use(express.static(path.join(__dirname, "images")))     // Pour afficher l'i
 app.use(express.json()) // Converts json to js-object
 app.use(logger)
 app.use(express.urlencoded({extended:false}))
+
+// Helmet
+app.use(helmet())
+
+// Cors
+app.use(cors({
+    origin: "*",
+    // origin: "http://localhost:3000"
+}))
 
 // Routes
 app.use("/api/books", require("./routes/books"))
